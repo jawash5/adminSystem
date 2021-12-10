@@ -22,10 +22,16 @@ class Admin extends Component {
           <LeftNav />
         </Sider>
         <Layout>
-          <Header style={{ backgroundColor: 'transparent', height: '80px' }}>
+          <Header
+            style={{
+              backgroundColor: 'transparent',
+              height: '80px',
+              padding: '0'
+            }}
+          >
             <MyHeader />
           </Header>
-          <Content style={{ backgroundColor: '#fff' }}>
+          <Content style={{ margin: '20px', backgroundColor: '#fff' }}>
             <Switch>
               <Route path="/home" component={Home} />
               <Route path="/category" component={Category} />
