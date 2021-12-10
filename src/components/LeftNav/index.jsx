@@ -1,23 +1,41 @@
 import React, { Component } from 'react'
 import './index.less'
 import logo from '../../assets/images/logo.png'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
-import { PieChartOutlined, MailOutlined } from '@ant-design/icons'
+import menuList from '../../config/menuConfig'
 
 const { SubMenu } = Menu
 
 class LeftNav extends Component {
-  state = {
-    collapsed: false
-  }
+  openKey = ''
 
-  toggleCollapsed = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
+  getMenuNodes = (menuList, path) => {
+    return menuList.map((item) => {
+      if (item.children) {
+        if (item.children.find((i) => i.key === path)) {
+          this.openKey = item.key
+        }
+
+        return (
+          <SubMenu key={item.key} icon={item.icon} title={item.title}>
+            {this.getMenuNodes(item.children, path)}
+          </SubMenu>
+        )
+      } else {
+        return (
+          <Menu.Item key={item.key} icon={item.icon}>
+            <Link to={item.key}>{item.title}</Link>
+          </Menu.Item>
+        )
+      }
     })
   }
+
   render() {
+    const path = this.props.location.pathname
+    const menuNodes = this.getMenuNodes(menuList, path)
+
     return (
       <div>
         <div className="left-nav">
@@ -28,27 +46,16 @@ class LeftNav extends Component {
         </div>
 
         <Menu
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+          selectedKeys={[path]}
+          defaultOpenKeys={[this.openKey]}
           mode="inline"
           theme="dark"
-          inlineCollapsed={this.state.collapsed}
         >
-          <Menu.Item key="1" icon={<PieChartOutlined />}>
-            首页
-          </Menu.Item>
-          <SubMenu key="sub1" icon={<MailOutlined />} title="商品">
-            <Menu.Item key="5" icon={<MailOutlined />}>
-              品类管理
-            </Menu.Item>
-            <Menu.Item key="6" icon={<MailOutlined />}>
-              商品管理
-            </Menu.Item>
-          </SubMenu>
+          {menuNodes}
         </Menu>
       </div>
     )
   }
 }
 
-export default LeftNav
+export default withRouter(LeftNav)
