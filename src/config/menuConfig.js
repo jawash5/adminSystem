@@ -1,37 +1,50 @@
-import { PieChartOutlined } from '@ant-design/icons'
+import {
+  HomeOutlined,
+  AreaChartOutlined,
+  UserOutlined,
+  ShoppingOutlined,
+  TagsOutlined,
+  ShoppingCartOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 
 const menuList = [
   {
     title: '首页',
     key: '/home',
-    icon: <PieChartOutlined />
+    icon: <HomeOutlined />
   },
   {
     title: '商品',
     key: '/products',
-    icon: <PieChartOutlined />,
+    icon: <ShoppingOutlined />,
     children: [
       {
         title: '品类管理',
         key: '/category',
-        icon: <PieChartOutlined />
+        icon: <TagsOutlined />
       },
       {
         title: '商品管理',
         key: '/product',
-        icon: <PieChartOutlined />
+        icon: <ShoppingCartOutlined />
       }
     ]
   },
   {
     title: '用户管理',
     key: '/user',
-    icon: <PieChartOutlined />
+    icon: <UserOutlined />
   },
   {
     title: '角色管理',
     key: '/role',
-    icon: <PieChartOutlined />
+    icon: <TeamOutlined />
+  },
+  {
+    title: '图形图表',
+    key: '/charts',
+    icon: <AreaChartOutlined />
   }
 ]
 

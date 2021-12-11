@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/formatDate'
 import { getUser, removeUser } from '../../utils/storage'
 import { withRouter } from 'react-router-dom'
 import menuList from '../../config/menuConfig'
-import { Modal } from 'antd'
+import { Modal, Button } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 class MyHeader extends Component {
@@ -80,10 +80,13 @@ class MyHeader extends Component {
       <div className="my-header">
         <div className="my-header-top">
           <span>欢迎，{username}</span>
-          <span onClick={() => this.logout()}>退出</span>
+          <Button type="link" onClick={() => this.logout()}>
+            退出
+          </Button>
         </div>
         <div className="my-header-bottom">
-          <div className="my-header-bottom-left">{this.getTitle()}</div>
+          {/*<div className="my-header-bottom-left">{this.getTitle()}</div>*/}
+          <div className="my-header-bottom-left">标题</div>
           <div className="my-header-bottom-right">
             <span>{currentTime}</span>
             <i className={'qi-' + weatherIcon} />
