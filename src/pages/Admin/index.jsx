@@ -17,7 +17,7 @@ const { Header, Footer, Sider, Content } = Layout
 class Admin extends Component {
   render() {
     return (
-      <Layout style={{ height: '100%' }}>
+      <Layout style={{ minHeight: '100%' }}>
         <Sider>
           <LeftNav />
         </Sider>

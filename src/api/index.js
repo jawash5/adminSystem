@@ -29,6 +29,45 @@ export function addUser(data) {
   })
 }
 
+/**
+ * 获取一级、二级分类的列表
+ * @param parentId
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getCategories(params) {
+  return service.request({
+    url: '/manage/category/list',
+    method: 'GET',
+    params
+  })
+}
+
+/**
+ * 添加分类
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function addCategory(data) {
+  return service.request({
+    url: '/manage/category/add',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 更新分类
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function updateCategory(data) {
+  return service.request({
+    url: '/manage/category/update',
+    method: 'POST',
+    data
+  })
+}
+
 export function getWeather(city) {
   return axios
     .get(
