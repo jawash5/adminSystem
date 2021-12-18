@@ -81,3 +81,55 @@ export function getWeather(city) {
       )
     })
 }
+
+/**
+ * 获取商品列表
+ * @param params
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getProducts(params) {
+  return service.request({
+    url: '/manage/product/list',
+    method: 'GET',
+    params
+  })
+}
+
+/**
+ * 搜索商品
+ * @param params
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function searchProducts(params) {
+  return service.request({
+    url: '/manage/product/search',
+    method: 'GET',
+    params
+  })
+}
+
+/**
+ * 根据分类id查询名称
+ * @param params
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getCategory(params) {
+  return service.request({
+    url: '/manage/category/info',
+    method: 'GET',
+    params
+  })
+}
+
+/**
+ * 更新商品的上下架状态 1上架 2下架
+ * @param params
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function updateStatus(data) {
+  return service.request({
+    url: '/manage/product/updateStatus',
+    method: 'POST',
+    data
+  })
+}
