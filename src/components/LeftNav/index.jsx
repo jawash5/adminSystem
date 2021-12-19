@@ -13,7 +13,7 @@ class LeftNav extends Component {
   getMenuNodes = (menuList, path) => {
     return menuList.map((item) => {
       if (item.children) {
-        if (item.children.find((i) => i.key === path)) {
+        if (item.children.find((i) => path.indexOf(i.key) === 0)) {
           this.openKey = item.key
         }
 
@@ -33,7 +33,12 @@ class LeftNav extends Component {
   }
 
   render() {
-    const path = this.props.location.pathname
+    let path = this.props.location.pathname
+
+    if (path.indexOf('/product') === 0) {
+      path = '/product'
+    }
+
     const menuNodes = this.getMenuNodes(menuList, path)
 
     return (
