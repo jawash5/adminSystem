@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card, Cascader, Form, Input } from 'antd'
+import { Button, Card, Cascader, Form, Input, Spin } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { getCategories } from '../../api'
 
@@ -8,26 +8,20 @@ const TextArea = Input.TextArea
 
 class AddUpdate extends Component {
   state = {
-    optionLists: []
+    optionLists: [],
+    loading: false
   }
 
   formRef = React.createRef()
+
+  product = this.props.location.state || {}
 
   onFinish = (values) => {
     console.log(values)
   }
 
-  initOptions = (categories) => {
-    const options = categories.map((c) => ({
-      value: c._id,
-      label: c.name,
-      isLeaf: false
-    }))
-    this.setState({ optionLists: options })
-  }
-
   getCategories = (parentId) => {
-    return getCategories({ parentId }).then((response) => {
+    return getCategories({ parentId }).then(async (response) => {
       const categories = response.data
       if (parentId === '0') {
         const options = categories.map((c) => ({
@@ -35,6 +29,19 @@ class AddUpdate extends Component {
           label: c.name,
           isLeaf: false
         }))
+        const { product } = this
+        const { pCategoryId } = product
+        const isUpdate = !!Object.values(product).length
+
+        if (isUpdate && pCategoryId !== '0') {
+          const subCategories = await this.getCategories(pCategoryId)
+          options.find((c) => c.value === pCategoryId).children =
+            subCategories.map((c) => ({
+              value: c._id,
+              label: c.name,
+              isLeaf: true
+            }))
+        }
         this.setState({ optionLists: options })
       } else {
         return categories
@@ -63,79 +70,129 @@ class AddUpdate extends Component {
   }
 
   componentDidMount() {
-    this.getCategories('0')
+    const { product } = this
+    const isUpdate = !!Object.values(product).length
+
+    if (isUpdate) {
+      this.setState({ loading: true })
+      const categoryIds = []
+
+      if (product.pCategoryId === '0') {
+        categoryIds.push(product.categoryId)
+      } else {
+        categoryIds.push(product.pCategoryId)
+        categoryIds.push(product.categoryId)
+      }
+
+      this.getCategories('0').finally(() => {
+        this.setState({ loading: false })
+        this.formRef.current.setFieldsValue({
+          name: product.name,
+          price: product.price,
+          desc: product.price,
+          categoryId: categoryIds
+        })
+      })
+    } else {
+      this.getCategories('0')
+    }
   }
 
   render() {
-    const { optionLists } = this.state
+    const { optionLists, loading } = this.state
+    const { product } = this
+    const isUpdate = !!Object.values(product).length
 
     const title = (
       <span>
-        <Button type="link" icon={<ArrowLeftOutlined />} />
-        <span>添加商品</span>
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => this.props.history.goBack()}
+        />
+        <span>{isUpdate ? '修改商品' : '添加商品'}</span>
       </span>
     )
 
     const formItemLayout = {
-      labelCol: { span: 2, offset: 5 },
+      labelCol: { span: 4, offset: 4 },
       wrapperCol: { span: 12 }
     }
 
     return (
       <Card title={title}>
-        <Form
-          autoComplete="off"
-          {...formItemLayout}
-          ref={this.formRef}
-          onFinish={this.onFinish}
-        >
-          <Item
-            name="name"
-            label="商品名称"
-            rules={[{ required: true, message: '必须输入商品名称' }]}
+        <Spin spinning={loading}>
+          <Form
+            autoComplete="off"
+            {...formItemLayout}
+            ref={this.formRef}
+            onFinish={this.onFinish}
           >
-            <Input placeholder="请输入商品名称" />
-          </Item>
-          <Item
-            name="desc"
-            label="商品描述"
-            rules={[{ required: true, message: '必须输入商品描述' }]}
-          >
-            <TextArea
-              autoSize={{ minRows: 2, maxRows: 6 }}
-              placeholder="请输入商品描述"
-            />
-          </Item>
-          <Item
-            name="price"
-            label="商品价格"
-            rules={[
-              { required: true, message: '必须输入商品价格' },
-              {
-                validator: (_, value) =>
-                  value * 1 >= 0
-                    ? Promise.resolve()
-                    : Promise.reject(new Error('商品价格必须大于0'))
-              }
-            ]}
-          >
-            <Input type="number" placeholder="请输入商品价格" addonAfter="元" />
-          </Item>
-          <Item label="商品分类">
-            <Cascader options={optionLists} loadData={this.loadData} />
-          </Item>
-          <Item label="商品图片">
-            <Input type="number" placeholder="请输入商品价格" addonAfter="元" />
-          </Item>
-          <Item label="商品详情">
-            <Input type="number" placeholder="请输入商品价格" addonAfter="元" />
-          </Item>
-          <Item>
-            <Button type="primary" htmlType="submit">
-              提交
-            </Button>
-          </Item>
-        </Form>
+            <Item
+              name="name"
+              label="商品名称"
+              rules={[{ required: true, message: '必须输入商品名称' }]}
+            >
+              <Input placeholder="请输入商品名称" />
+            </Item>
+            <Item
+              name="desc"
+              label="商品描述"
+              rules={[{ required: true, message: '必须输入商品描述' }]}
+            >
+              <TextArea
+                autoSize={{ minRows: 2, maxRows: 6 }}
+                placeholder="请输入商品描述"
+              />
+            </Item>
+            <Item
+              name="price"
+              label="商品价格"
+              rules={[
+                { required: true, message: '必须输入商品价格' },
+                {
+                  validator: (_, value) =>
+                    value * 1 >= 0
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('商品价格必须大于0'))
+                }
+              ]}
+            >
+              <Input
+                type="number"
+                placeholder="请输入商品价格"
+                addonAfter="元"
+              />
+            </Item>
+            <Item
+              name="categoryId"
+              label="商品分类"
+              placeholder="请选择商品分类"
+              rules={[{ required: true, message: '必须指定商品分类' }]}
+            >
+              <Cascader options={optionLists} loadData={this.loadData} />
+            </Item>
+            <Item label="商品图片">
+              <Input
+                type="number"
+                placeholder="请输入商品价格"
+                addonAfter="元"
+              />
+            </Item>
+            <Item label="商品详情">
+              <Input
+                type="number"
+                placeholder="请输入商品价格"
+                addonAfter="元"
+              />
+            </Item>
+            <Item>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </Item>
+          </Form>
+        </Spin>
       </Card>
     )
   }

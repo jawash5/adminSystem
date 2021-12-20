@@ -138,7 +138,14 @@ class Home extends Component {
                   >
                     详情
                   </Button>
-                  <Button type="link">修改</Button>
+                  <Button
+                    type="link"
+                    onClick={() =>
+                      this.props.history.push('/product/addUpdate', product)
+                    }
+                  >
+                    修改
+                  </Button>
                 </span>
               )
             }}
