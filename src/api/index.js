@@ -133,3 +133,16 @@ export function updateStatus(data) {
     data
   })
 }
+
+/**
+ * 删除图片
+ * @param params
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function deleteImage(data) {
+  return service.request({
+    url: '/manage/img/delete',
+    method: 'POST',
+    data
+  })
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button, Card, Cascader, Form, Input, Spin } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { getCategories } from '../../api'
+import PicturesWall from '../../components/PicturesWall'
 
 const Item = Form.Item
 const TextArea = Input.TextArea
@@ -9,14 +10,19 @@ const TextArea = Input.TextArea
 class AddUpdate extends Component {
   state = {
     optionLists: [],
+    images: [],
     loading: false
   }
 
   formRef = React.createRef()
 
+  picturesWall = React.createRef()
+
   product = this.props.location.state || {}
 
   onFinish = (values) => {
+    const images = this.picturesWall.current.getImages()
+    console.log(images)
     console.log(values)
   }
 
@@ -85,11 +91,11 @@ class AddUpdate extends Component {
       }
 
       this.getCategories('0').finally(() => {
-        this.setState({ loading: false })
+        this.setState({ loading: false, images: product.imgs })
         this.formRef.current.setFieldsValue({
           name: product.name,
           price: product.price,
-          desc: product.price,
+          desc: product.desc,
           categoryId: categoryIds
         })
       })
@@ -99,7 +105,7 @@ class AddUpdate extends Component {
   }
 
   render() {
-    const { optionLists, loading } = this.state
+    const { optionLists, loading, images } = this.state
     const { product } = this
     const isUpdate = !!Object.values(product).length
 
@@ -173,11 +179,7 @@ class AddUpdate extends Component {
               <Cascader options={optionLists} loadData={this.loadData} />
             </Item>
             <Item label="商品图片">
-              <Input
-                type="number"
-                placeholder="请输入商品价格"
-                addonAfter="元"
-              />
+              <PicturesWall ref={this.picturesWall} images={images} />
             </Item>
             <Item label="商品详情">
               <Input
