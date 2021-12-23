@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Button, Card, Cascader, Form, Input, Spin } from 'antd'
+import { Button, Card, Cascader, Form, Input, InputNumber, Spin } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { getCategories } from '../../api'
 import PicturesWall from '../../components/PicturesWall'
+import RichTextEditor from '../../components/RichTextEditor'
 
 const Item = Form.Item
 const TextArea = Input.TextArea
@@ -15,13 +16,15 @@ class AddUpdate extends Component {
   }
 
   formRef = React.createRef()
-
   picturesWall = React.createRef()
+  editor = React.createRef()
 
   product = this.props.location.state || {}
 
   onFinish = (values) => {
     const images = this.picturesWall.current.getImages()
+    const detail = this.editor.current.getDetail()
+    console.log(detail)
     console.log(images)
     console.log(values)
   }
@@ -91,7 +94,7 @@ class AddUpdate extends Component {
       }
 
       this.getCategories('0').finally(() => {
-        this.setState({ loading: false, images: product.imgs })
+        this.setState({ loading: false })
         this.formRef.current.setFieldsValue({
           name: product.name,
           price: product.price,
@@ -121,12 +124,12 @@ class AddUpdate extends Component {
     )
 
     const formItemLayout = {
-      labelCol: { span: 4, offset: 4 },
-      wrapperCol: { span: 12 }
+      labelCol: { span: 2, offset: 2 },
+      wrapperCol: { span: 18 }
     }
 
     return (
-      <Card title={title}>
+      <Card className="product-add-update" title={title}>
         <Spin spinning={loading}>
           <Form
             autoComplete="off"
@@ -139,7 +142,7 @@ class AddUpdate extends Component {
               label="商品名称"
               rules={[{ required: true, message: '必须输入商品名称' }]}
             >
-              <Input placeholder="请输入商品名称" />
+              <Input className="input" placeholder="请输入商品名称" />
             </Item>
             <Item
               name="desc"
@@ -147,6 +150,7 @@ class AddUpdate extends Component {
               rules={[{ required: true, message: '必须输入商品描述' }]}
             >
               <TextArea
+                className="input"
                 autoSize={{ minRows: 2, maxRows: 6 }}
                 placeholder="请输入商品描述"
               />
@@ -164,11 +168,7 @@ class AddUpdate extends Component {
                 }
               ]}
             >
-              <Input
-                type="number"
-                placeholder="请输入商品价格"
-                addonAfter="元"
-              />
+              <InputNumber placeholder="请输入商品价格" addonAfter="元" />
             </Item>
             <Item
               name="categoryId"
@@ -176,17 +176,17 @@ class AddUpdate extends Component {
               placeholder="请选择商品分类"
               rules={[{ required: true, message: '必须指定商品分类' }]}
             >
-              <Cascader options={optionLists} loadData={this.loadData} />
+              <Cascader
+                style={{ width: '50%' }}
+                options={optionLists}
+                loadData={this.loadData}
+              />
             </Item>
             <Item label="商品图片">
-              <PicturesWall ref={this.picturesWall} images={images} />
+              <PicturesWall ref={this.picturesWall} images={product.imgs} />
             </Item>
             <Item label="商品详情">
-              <Input
-                type="number"
-                placeholder="请输入商品价格"
-                addonAfter="元"
-              />
+              <RichTextEditor ref={this.editor} detail={product.detail} />
             </Item>
             <Item>
               <Button type="primary" htmlType="submit">

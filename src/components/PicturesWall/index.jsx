@@ -22,7 +22,7 @@ class PicturesWall extends Component {
   constructor(props) {
     super(props)
     let fileList = []
-    const { images } = props
+    const images = props.images
     if (images && images.length > 0) {
       fileList = images.map((image, index) => ({
         uid: -index,
