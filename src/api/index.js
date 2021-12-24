@@ -172,3 +172,26 @@ export function updateProduct(data) {
     data
   })
 }
+
+/**
+ * 获取角色列表
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getRoles() {
+  return service.request({
+    url: '/manage/role/list',
+    method: 'GET'
+  })
+}
+
+/**
+ * 添加角色
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function addRoles(data) {
+  return service.request({
+    url: '/manage/role/add',
+    method: 'POST',
+    data
+  })
+}
