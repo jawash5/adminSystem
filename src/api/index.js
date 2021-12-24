@@ -123,7 +123,7 @@ export function getCategory(params) {
 
 /**
  * 更新商品的上下架状态 1上架 2下架
- * @param params
+ * @param data
  * @returns {Promise<AxiosResponse<any>>}
  */
 export function updateStatus(data) {
@@ -136,12 +136,38 @@ export function updateStatus(data) {
 
 /**
  * 删除图片
- * @param params
+ * @param data
  * @returns {Promise<AxiosResponse<any>>}
  */
 export function deleteImage(data) {
   return service.request({
     url: '/manage/img/delete',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 添加商品
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function addProduct(data) {
+  return service.request({
+    url: '/manage/product/add',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 更新商品
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function updateProduct(data) {
+  return service.request({
+    url: '/manage/product/update',
     method: 'POST',
     data
   })

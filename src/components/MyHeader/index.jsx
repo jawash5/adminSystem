@@ -37,7 +37,7 @@ class MyHeader extends Component {
     let title = ''
     const deepSearch = (menu) => {
       menu.forEach((item) => {
-        if (item.key === path) {
+        if (path.indexOf(item.key) === 0) {
           title = item.title
         } else if (item.children) {
           deepSearch(item.children)

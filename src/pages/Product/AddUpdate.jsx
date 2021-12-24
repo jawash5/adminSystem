@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
-import { Button, Card, Cascader, Form, Input, InputNumber, Spin } from 'antd'
+import {
+  Button,
+  Card,
+  Cascader,
+  Form,
+  Input,
+  InputNumber,
+  Spin,
+  message
+} from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { getCategories } from '../../api'
+import { addProduct, getCategories, updateProduct } from '../../api'
 import PicturesWall from '../../components/PicturesWall'
 import RichTextEditor from '../../components/RichTextEditor'
 
@@ -24,9 +33,42 @@ class AddUpdate extends Component {
   onFinish = (values) => {
     const images = this.picturesWall.current.getImages()
     const detail = this.editor.current.getDetail()
-    console.log(detail)
-    console.log(images)
-    console.log(values)
+
+    const { name, desc, price, categoryIds } = values
+    let pCategoryId, categoryId
+
+    if (categoryIds.length === 1) {
+      pCategoryId = '0'
+      categoryId = categoryIds[0]
+    } else {
+      pCategoryId = categoryIds[0]
+      categoryId = categoryIds[1]
+    }
+
+    const isUpdate = !!Object.values(this.product).length
+    const api = isUpdate ? updateProduct : addProduct
+
+    const product = {
+      name,
+      desc,
+      price,
+      imgs: images,
+      detail,
+      pCategoryId,
+      categoryId
+    }
+    if (isUpdate) {
+      product._id = this.product._id
+    }
+
+    api(product).then((response) => {
+      if (response.status === 0) {
+        message.success(`${isUpdate ? '更新' : '添加'}商品成功`)
+        this.props.history.goBack()
+      } else {
+        message.error(`${isUpdate ? '更新' : '添加'}商品失败`)
+      }
+    })
   }
 
   getCategories = (parentId) => {
@@ -99,7 +141,7 @@ class AddUpdate extends Component {
           name: product.name,
           price: product.price,
           desc: product.desc,
-          categoryId: categoryIds
+          categoryIds
         })
       })
     } else {
@@ -108,7 +150,7 @@ class AddUpdate extends Component {
   }
 
   render() {
-    const { optionLists, loading, images } = this.state
+    const { optionLists, loading } = this.state
     const { product } = this
     const isUpdate = !!Object.values(product).length
 
@@ -171,7 +213,7 @@ class AddUpdate extends Component {
               <InputNumber placeholder="请输入商品价格" addonAfter="元" />
             </Item>
             <Item
-              name="categoryId"
+              name="categoryIds"
               label="商品分类"
               placeholder="请选择商品分类"
               rules={[{ required: true, message: '必须指定商品分类' }]}
@@ -188,11 +230,11 @@ class AddUpdate extends Component {
             <Item label="商品详情">
               <RichTextEditor ref={this.editor} detail={product.detail} />
             </Item>
-            <Item>
+            <div style={{ textAlign: 'center' }}>
               <Button type="primary" htmlType="submit">
                 提交
               </Button>
-            </Item>
+            </div>
           </Form>
         </Spin>
       </Card>
