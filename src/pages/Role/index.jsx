@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
-import { Card, Button, Table, message, Modal, Space } from 'antd'
-import { addRoles, getRoles } from '../../api'
+import { Button, Card, message, Modal, Space, Table } from 'antd'
+import { addRoles, getRoles, updateRole } from '../../api'
 import AddForm from './AddForm'
+import AuthForm from './AuthForm'
+import { getUser } from '../../utils/storage'
+import { formatDate } from '../../utils/formatDate'
 
 const { Column } = Table
 
@@ -9,8 +12,11 @@ class Role extends Component {
   state = {
     roles: [],
     role: {}, //当前选中的角色
-    isShowAdd: false
+    isShowAdd: false,
+    isShowAuth: false
   }
+
+  auth = React.createRef()
 
   onRow = (role) => {
     return {
@@ -49,12 +55,31 @@ class Role extends Component {
     })
   }
 
+  updateRole = () => {
+    const role = this.state.role
+    role.menus = this.auth.current.getMenus()
+    role.auth_name = getUser().username
+    role.auth_time = Date.now()
+    updateRole(role)
+      .then((response) => {
+        if (response.status === 0) {
+          message.success('更新角色权限成功')
+          this.setState({ roles: [...this.state.roles] })
+        } else {
+          message.error('更新角色权限失败')
+        }
+      })
+      .finally(() => {
+        this.setState({ isShowAuth: false })
+      })
+  }
+
   componentDidMount() {
     this.getRoles()
   }
 
   render() {
-    const { roles, role, isShowAdd } = this.state
+    const { roles, role, isShowAdd, isShowAuth } = this.state
 
     const title = (
       <Space>
@@ -64,7 +89,11 @@ class Role extends Component {
         >
           创建角色
         </Button>
-        <Button type="primary" disabled={!role._id}>
+        <Button
+          type="primary"
+          disabled={!role._id}
+          onClick={() => this.setState({ isShowAuth: true })}
+        >
           设置角色权限
         </Button>
       </Space>
@@ -92,8 +121,12 @@ class Role extends Component {
           onRow={this.onRow}
         >
           <Column title="角色名称" dataIndex="name" />
-          <Column title="创建时间" dataIndex="create_time" />
-          <Column title="授权时间" dataIndex="auth_time" />
+          <Column
+            title="创建时间"
+            dataIndex="create_time"
+            render={formatDate}
+          />
+          <Column title="授权时间" dataIndex="auth_time" render={formatDate} />
           <Column title="授权人" dataIndex="auth_name" />
         </Table>
         <Modal
@@ -104,6 +137,15 @@ class Role extends Component {
           destroyOnClose={true}
         >
           <AddForm setForm={(form) => (this.form = form)} />
+        </Modal>
+        <Modal
+          title="设置角色权限"
+          visible={isShowAuth}
+          onOk={this.updateRole}
+          onCancel={() => this.setState({ isShowAuth: false })}
+          destroyOnClose={true}
+        >
+          <AuthForm ref={this.auth} role={role} />
         </Modal>
       </Card>
     )

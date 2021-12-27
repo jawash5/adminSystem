@@ -195,3 +195,15 @@ export function addRoles(data) {
     data
   })
 }
+
+/**
+ * 添加角色
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function updateRole(data) {
+  return service.request({
+    url: '/manage/role/update',
+    method: 'POST',
+    data
+  })
+}

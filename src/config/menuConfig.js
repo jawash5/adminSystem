@@ -5,7 +5,10 @@ import {
   ShoppingOutlined,
   TagsOutlined,
   ShoppingCartOutlined,
-  TeamOutlined
+  TeamOutlined,
+  BarChartOutlined,
+  PieChartOutlined,
+  LineChartOutlined
 } from '@ant-design/icons'
 
 const menuList = [
@@ -44,7 +47,24 @@ const menuList = [
   {
     title: '图形图表',
     key: '/charts',
-    icon: <AreaChartOutlined />
+    icon: <AreaChartOutlined />,
+    children: [
+      {
+        title: '条形图',
+        key: '/charts/bar',
+        icon: <BarChartOutlined />
+      },
+      {
+        title: '饼图',
+        key: '/charts/pie',
+        icon: <PieChartOutlined />
+      },
+      {
+        title: '折线图',
+        key: '/charts/line',
+        icon: <LineChartOutlined />
+      }
+    ]
   }
 ]
 
