@@ -207,3 +207,26 @@ export function updateRole(data) {
     data
   })
 }
+
+/**
+ * 获取用户列表
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getUsers() {
+  return service.request({
+    url: '/manage/user/list',
+    method: 'GET'
+  })
+}
+
+/**
+ * 删除用户
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function deleteUser(data) {
+  return service.request({
+    url: '/manage/user/delete',
+    method: 'POST',
+    data
+  })
+}
