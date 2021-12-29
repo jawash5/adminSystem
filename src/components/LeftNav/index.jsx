@@ -4,31 +4,50 @@ import logo from '../../assets/images/logo.png'
 import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
 import menuList from '../../config/menuConfig'
+import { getUser } from '../../utils/storage'
 
 const { SubMenu } = Menu
 
 class LeftNav extends Component {
   openKey = ''
 
+  hasAuth = (item) => {
+    const { key, isPublic } = item
+    const user = getUser()
+    const username = user.username
+    const menus = user.role.menus
+
+    if (username === 'admin' || isPublic || menus.includes(key)) {
+      return true
+    } else if (item.children) {
+      return !!item.children.find((child) => menus.includes(child.key))
+    }
+
+    return false
+  }
+
   getMenuNodes = (menuList, path) => {
     return menuList.map((item) => {
-      if (item.children) {
-        if (item.children.find((i) => path.indexOf(i.key) === 0)) {
-          this.openKey = item.key
-        }
+      if (this.hasAuth(item)) {
+        if (item.children) {
+          if (item.children.find((i) => path.indexOf(i.key) === 0)) {
+            this.openKey = item.key
+          }
 
-        return (
-          <SubMenu key={item.key} icon={item.icon} title={item.title}>
-            {this.getMenuNodes(item.children, path)}
-          </SubMenu>
-        )
-      } else {
-        return (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.key}>{item.title}</Link>
-          </Menu.Item>
-        )
+          return (
+            <SubMenu key={item.key} icon={item.icon} title={item.title}>
+              {this.getMenuNodes(item.children, path)}
+            </SubMenu>
+          )
+        } else {
+          return (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.key}>{item.title}</Link>
+            </Menu.Item>
+          )
+        }
       }
+      return null
     })
   }
 

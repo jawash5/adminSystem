@@ -3,7 +3,7 @@ import { Button, Card, message, Modal, Space, Table } from 'antd'
 import { addRoles, getRoles, updateRole } from '../../api'
 import AddForm from './AddForm'
 import AuthForm from './AuthForm'
-import { getUser } from '../../utils/storage'
+import { getUser, removeUser } from '../../utils/storage'
 import { formatDate } from '../../utils/formatDate'
 
 const { Column } = Table
@@ -63,8 +63,14 @@ class Role extends Component {
     updateRole(role)
       .then((response) => {
         if (response.status === 0) {
-          message.success('更新角色权限成功')
-          this.setState({ roles: [...this.state.roles] })
+          if (role._id === getUser().role_id) {
+            this.props.history.replace('/login')
+            removeUser()
+            message.success('当前角色权限修改,请重新登录')
+          } else {
+            message.success('更新角色权限成功')
+            this.setState({ roles: [...this.state.roles] })
+          }
         } else {
           message.error('更新角色权限失败')
         }
