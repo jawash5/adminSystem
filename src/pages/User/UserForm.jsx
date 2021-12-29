@@ -7,7 +7,9 @@ const Option = Select.Option
 
 class AddForm extends Component {
   static propTypes = {
-    setForm: PropTypes.func.isRequired
+    setForm: PropTypes.func.isRequired,
+    roles: PropTypes.array.isRequired,
+    user: PropTypes.object
   }
 
   formRef = React.createRef()
@@ -17,12 +19,15 @@ class AddForm extends Component {
   }
 
   render() {
+    const { roles, user } = this.props
+
     return (
       <Form
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
         ref={this.formRef}
-        autoComplete="new-password"
+        autoComplete="off"
+        initialValues={user}
       >
         <Item
           name="username"
@@ -31,13 +36,15 @@ class AddForm extends Component {
         >
           <Input placeholder="请输入用户名" />
         </Item>
-        <Item
-          name="password"
-          label="密码"
-          rules={[{ required: true, message: '密码不为空' }]}
-        >
-          <Input type="password" placeholder="请输入密码" />
-        </Item>
+        {user._id ? null : (
+          <Item
+            name="password"
+            label="密码"
+            rules={[{ required: true, message: '密码不为空' }]}
+          >
+            <Input type="password" placeholder="请输入密码" />
+          </Item>
+        )}
         <Item
           name="phone"
           label="手机号"
@@ -57,8 +64,12 @@ class AddForm extends Component {
           label="角色"
           rules={[{ required: true, message: '角色不为空' }]}
         >
-          <Select placeholder="请输入邮箱">
-            <Option value="1">A</Option>
+          <Select placeholder="请选择角色">
+            {roles.map((role) => (
+              <Option key={role._id} value={role._id}>
+                {role.name}
+              </Option>
+            ))}
           </Select>
         </Item>
       </Form>

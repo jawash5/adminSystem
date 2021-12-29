@@ -17,19 +17,6 @@ export function login(data) {
 }
 
 /**
- * 添加用户
- * @param data
- * @returns {Promise<AxiosResponse<any>>}
- */
-export function addUser(data) {
-  return service.request({
-    url: '/manage/user/add',
-    method: 'POST',
-    data
-  })
-}
-
-/**
  * 获取一级、二级分类的列表
  * @param parentId
  * @returns {Promise<AxiosResponse<any>>}
@@ -226,6 +213,30 @@ export function getUsers() {
 export function deleteUser(data) {
   return service.request({
     url: '/manage/user/delete',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 添加用户
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function addUser(data) {
+  return service.request({
+    url: '/manage/user/add',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 更新用户
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function updateUser(data) {
+  return service.request({
+    url: '/manage/user/update',
     method: 'POST',
     data
   })

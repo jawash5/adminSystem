@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
 import { formatDate } from '../../utils/formatDate'
-import { getUsers, deleteUser } from '../../api'
+import { getUsers, deleteUser, addUser, updateUser } from '../../api'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import UserForm from './UserForm'
 
@@ -33,7 +33,24 @@ class User extends Component {
     })
   }
 
-  addOrUpdateUser = () => {}
+  addOrUpdateUser = () => {
+    const isUpdate = !!this.user
+    const api = isUpdate ? updateUser : addUser
+    const user = this.form.current.getFieldsValue()
+    if (isUpdate) {
+      user._id = this.user._id
+    }
+    api(user)
+      .then((response) => {
+        if (response.status === 0) {
+          message.success(isUpdate ? '修改用户成功' : '添加用户成功')
+          this.getUsers()
+        }
+      })
+      .finally(() => {
+        this.setState({ isShow: false })
+      })
+  }
 
   deleteUser = (user) => {
     Modal.confirm({
@@ -50,15 +67,26 @@ class User extends Component {
     })
   }
 
+  showUpdate = (user) => {
+    this.user = user
+    this.setState({ isShow: true })
+  }
+
+  showAdd = () => {
+    this.user = null
+    this.setState({ isShow: true })
+  }
+
   componentDidMount() {
     this.getUsers()
   }
 
   render() {
-    const { users, isShow, roleMap } = this.state
+    const { users, isShow, roleMap, roles } = this.state
+    const user = this.user || {}
 
     const title = (
-      <Button type="primary" onClick={() => this.setState({ isShow: true })}>
+      <Button type="primary" onClick={() => this.showAdd()}>
         创建用户
       </Button>
     )
@@ -92,7 +120,9 @@ class User extends Component {
             title="操作"
             render={(user) => (
               <span>
-                <Button type="link">修改</Button>
+                <Button type="link" onClick={() => this.showUpdate(user)}>
+                  修改
+                </Button>
                 <Button type="link" onClick={() => this.deleteUser(user)}>
                   删除
                 </Button>
@@ -101,13 +131,17 @@ class User extends Component {
           />
         </Table>
         <Modal
-          title="添加用户 "
+          title={user._id ? '修改用户' : '添加用户'}
           visible={isShow}
           onOk={this.addOrUpdateUser}
           onCancel={() => this.setState({ isShow: false })}
           destroyOnClose={true}
         >
-          <UserForm setForm={(form) => (this.form = form)} />
+          <UserForm
+            setForm={(form) => (this.form = form)}
+            roles={roles}
+            user={user}
+          />
         </Modal>
       </Card>
     )
