@@ -1,25 +1,16 @@
 import React from 'react'
 import './index.less'
 import logo from '../../assets/images/logo.png'
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { login } from '../../api'
-import { useHistory, Redirect } from 'react-router-dom'
-import { getUser, saveUser } from '../../utils/storage'
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { initLogin } from '../../redux/actions/user-action'
 
-function Login() {
-  const history = useHistory()
+function Login(props) {
   const onFinish = (values) => {
-    login(values).then((response) => {
-      if (response.status === 0) {
-        message.success('登录成功')
-        const user = response.data
-        saveUser(user)
-        history.replace('/')
-      } else if (response.status === 1) {
-        message.error(response.msg)
-      }
-    })
+    const { username, password } = values
+    props.initLogin(username, password)
   }
 
   const validatorPsd = (rule, value) => {
@@ -36,9 +27,9 @@ function Login() {
     }
   }
 
-  const user = getUser()
+  const user = props.user
   if (user && user._id) {
-    return <Redirect to="/" />
+    return <Redirect to="/home" />
   }
 
   return (
@@ -92,4 +83,4 @@ function Login() {
   )
 }
 
-export default Login
+export default connect((state) => ({ user: state.user }), { initLogin })(Login)

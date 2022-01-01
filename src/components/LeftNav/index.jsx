@@ -4,7 +4,8 @@ import logo from '../../assets/images/logo.png'
 import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
 import menuList from '../../config/menuConfig'
-import { getUser } from '../../utils/storage'
+import { connect } from 'react-redux'
+import { setHeadTitle } from '../../redux/actions/head-action'
 
 const { SubMenu } = Menu
 
@@ -13,7 +14,7 @@ class LeftNav extends Component {
 
   hasAuth = (item) => {
     const { key, isPublic } = item
-    const user = getUser()
+    const user = this.props.user
     const username = user.username
     const menus = user.role.menus
 
@@ -40,9 +41,20 @@ class LeftNav extends Component {
             </SubMenu>
           )
         } else {
+          if (
+            this.props.title !== item.title &&
+            (item.key === path || path.indexOf(item.key) === 0)
+          ) {
+            this.props.setHeadTitle(item.title)
+          }
           return (
             <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.key}>{item.title}</Link>
+              <Link
+                to={item.key}
+                onClick={() => this.props.setHeadTitle(item.title)}
+              >
+                {item.title}
+              </Link>
             </Menu.Item>
           )
         }
@@ -53,11 +65,6 @@ class LeftNav extends Component {
 
   render() {
     let path = this.props.location.pathname
-
-    if (path.indexOf('/product') === 0) {
-      path = '/product'
-    }
-
     const menuNodes = this.getMenuNodes(menuList, path)
 
     return (
@@ -82,4 +89,12 @@ class LeftNav extends Component {
   }
 }
 
-export default withRouter(LeftNav)
+export default connect(
+  (state) => ({
+    title: state.header,
+    user: state.user
+  }),
+  {
+    setHeadTitle
+  }
+)(withRouter(LeftNav))

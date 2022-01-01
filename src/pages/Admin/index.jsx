@@ -11,13 +11,13 @@ import Bar from '../Charts/Bar'
 import Line from '../Charts/Line'
 import Pie from '../Charts/Pie'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import { getUser } from '../../utils/storage'
+import { connect } from 'react-redux'
 
 const { Header, Footer, Sider, Content } = Layout
 
 class Admin extends Component {
   render() {
-    const user = getUser()
+    const user = this.props.user
     if (!user.username) return <Redirect to="/login" />
     return (
       <Layout style={{ minHeight: '100%' }}>
@@ -56,4 +56,4 @@ class Admin extends Component {
   }
 }
 
-export default Admin
+export default connect((state) => ({ user: state.user }), {})(Admin)

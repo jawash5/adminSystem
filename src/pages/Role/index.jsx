@@ -3,8 +3,9 @@ import { Button, Card, message, Modal, Space, Table } from 'antd'
 import { addRoles, getRoles, updateRole } from '../../api'
 import AddForm from './AddForm'
 import AuthForm from './AuthForm'
-import { getUser, removeUser } from '../../utils/storage'
 import { formatDate } from '../../utils/formatDate'
+import { connect } from 'react-redux'
+import { logout } from '../../redux/actions/user-action'
 
 const { Column } = Table
 
@@ -58,14 +59,13 @@ class Role extends Component {
   updateRole = () => {
     const role = this.state.role
     role.menus = this.auth.current.getMenus()
-    role.auth_name = getUser().username
+    role.auth_name = this.props.user.username
     role.auth_time = Date.now()
     updateRole(role)
       .then((response) => {
         if (response.status === 0) {
-          if (role._id === getUser().role_id) {
-            this.props.history.replace('/login')
-            removeUser()
+          if (role._id === this.props.user.role_id) {
+            this.props.logout()
             message.success('当前角色权限修改,请重新登录')
           } else {
             message.success('更新角色权限成功')
@@ -158,4 +158,6 @@ class Role extends Component {
   }
 }
 
-export default Role
+export default connect((state) => ({ user: state.user }), {
+  logout
+})(Role)
